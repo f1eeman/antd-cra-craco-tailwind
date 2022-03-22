@@ -12,10 +12,12 @@ const CollectionCreateForm = ({ visible, onCreate, onCancel }: Props) => {
   const inputRef = useRef(null);
   useEffect(() => {
     if (visible) {
-      // @ts-ignore
-      inputRef?.current?.focus({
-        cursor: "start",
-      });
+      setTimeout(() => {
+        // @ts-ignore
+        inputRef?.current?.focus({
+          cursor: "start",
+        });
+      }, 100);
     }
   }, [visible]);
 
