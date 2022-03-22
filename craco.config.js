@@ -1,24 +1,27 @@
-const CracoLessPlugin = require('craco-less');
+const CracoLessPlugin = require("craco-less");
 const { NormalModuleReplacementPlugin } = require("webpack");
-const path = require('path');
+const path = require("path");
 
 module.exports = {
-  webpack: {
-    configure: (config, { env, paths }) => {
-      config.plugins.push(
-        new NormalModuleReplacementPlugin(/node_modules\/antd\/lib\/style\/index\.less/, path.resolve(__dirname, 'src/global.less'))
-      );
-      return config;
-    },
-  },
+  // webpack: {
+  //   configure: (config, { env, paths }) => {
+  //     config.plugins.push(
+  //       new NormalModuleReplacementPlugin(
+  //         /node_modules\/antd\/lib\/style\/index\.less/,
+  //         path.resolve(__dirname, "src/style/global.less")
+  //       )
+  //     );
+  //     return config;
+  //   },
+  // },
   style: {
     postcssOptions: {
       plugins: [
-        require('postcss-import'),
-        require('tailwindcss'),
-        require('autoprefixer'),
-      ]
-    }
+        require("postcss-import"),
+        require("tailwindcss"),
+        require("autoprefixer"),
+      ],
+    },
   },
   plugins: [
     {
@@ -26,7 +29,7 @@ module.exports = {
       options: {
         lessLoaderOptions: {
           lessOptions: {
-            modifyVars: { '@primary-color': '#1DA57A' },
+            modifyVars: { "@primary-color": "#2bd909" },
             javascriptEnabled: true,
           },
         },
