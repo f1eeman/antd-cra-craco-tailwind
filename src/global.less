@@ -1,0 +1,61 @@
+//#antd { @import '~antd/lib/style/core/index.less'; @import '~antd/lib/style/themes/default.less'; }
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body {
+  min-width: 320px;
+  margin: 0;
+  padding: 0;
+  background-color: red;
+}
+
+a {
+  text-decoration: none;
+}
+
+html {
+  box-sizing: border-box;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: inherit;
+}
+
+.ant-alert-success-custom {
+  background-color: aqua;
+}
+
+.trigger {
+  padding: 0 24px;
+  font-size: 18px;
+  line-height: 64px;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.trigger:hover {
+  color: #1890ff;
+}
+
+.logo {
+  height: 32px;
+  margin: 16px;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.site-layout .site-layout-background {
+  background: #fff;
+}
+
+.ant-menu-submenu-title--custom {
+  font-size: 32px;
+}
+
+.ant-layout-sider-children .ant-menu-inline.ant-menu-root .ant-menu-submenu-title {
+  display: flex !important;
+  align-items: center !important;
+}

@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
-import './App.css';
-import {Layout, Menu} from "antd";
+import 'antd/dist/antd.less';
+import {Button, Layout, Menu, Typography} from "antd";
 import {
     MenuUnfoldOutlined,
     MenuFoldOutlined,
@@ -22,8 +22,8 @@ function App() {
         }));
     };
   return (
-      <Layout>
-          <Sider trigger={null} collapsible collapsed={state.collapsed}>
+      <Layout >
+          <Sider trigger={null} collapsible collapsed={state.collapsed} className={'some-sider'}>
               <div className="logo" />
               <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
                   <Menu.Item key="1" icon={<UserOutlined />}>
@@ -52,7 +52,8 @@ function App() {
                       minHeight: 280,
                   }}
               >
-                  Content
+                  <Typography.Paragraph className='bg-amber-400'>asdasdasd</Typography.Paragraph>
+                  <Button className='bg-amber-400'>Contents</Button>
               </Content>
           </Layout>
       </Layout>
