@@ -1,5 +1,12 @@
 import { useEffect, useState } from "react";
-import { Table as AntTable, Switch, Popconfirm, Button, Spin } from "antd";
+import {
+  Table as AntTable,
+  Switch,
+  Popconfirm,
+  Button,
+  Spin,
+  Modal,
+} from "antd";
 import { ColumnsType } from "antd/lib/table";
 
 type DataItem = {
@@ -8,45 +15,10 @@ type DataItem = {
   age: number;
   address: string;
 };
-const Confirm = ({ onDelete }: { onDelete: () => void }) => {
-  const [visible, setVisible] = useState(false);
-  const [confirmLoading, setConfirmLoading] = useState(false);
-
-  const showPopconfirm = () => {
-    setVisible(true);
-  };
-
-  const handleOk = () => {
-    setConfirmLoading(true);
-    setTimeout(() => {
-      onDelete && onDelete();
-      setVisible(false);
-      setConfirmLoading(false);
-    }, 2000);
-  };
-
-  const handleCancel = () => {
-    console.log("Clicked cancel button");
-    setVisible(false);
-  };
-
-  return (
-    <Popconfirm
-      title="Title"
-      visible={visible}
-      onConfirm={handleOk}
-      okButtonProps={{ loading: confirmLoading }}
-      onCancel={handleCancel}
-    >
-      <Button type="primary" onClick={showPopconfirm}>
-        Delete
-      </Button>
-    </Popconfirm>
-  );
-};
 
 const Table = (): JSX.Element => {
   const [data, setData] = useState<DataItem[]>([]);
+  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -129,15 +101,27 @@ const Table = (): JSX.Element => {
       key: "operation",
       fixed: "right",
       width: 100,
-      render: (_, record) => (
-        <Confirm
-          onDelete={() => {
-            setData((prevData) =>
-              prevData.filter((item) => item.key !== record.key)
-            );
-          }}
-        />
-      ),
+      render: (_, record) => {
+        function confirm() {
+          Modal.confirm({
+            width: 320,
+            title: "Delete this user from this project?",
+            cancelText: "Cancel",
+            closable: true,
+            maskClosable: true,
+            onOk: () => {
+              setData((prevData) =>
+                prevData.filter((item) => item.key !== record.key)
+              );
+            },
+          });
+        }
+        return (
+          <Button danger onClick={confirm}>
+            Delete
+          </Button>
+        );
+      },
     },
   ];
 
