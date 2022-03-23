@@ -1,165 +1,144 @@
-import { useEffect, useState } from "react";
-import { Table as AntTable, Switch, Button, Spin, Modal } from "antd";
-import { ColumnsType } from "antd/lib/table";
+import React, { useEffect, useState } from "react";
+import { Table, Space, Button } from "antd";
+import { TablePaginationConfig } from "antd/lib/table";
+import qs from "qs";
+import { Data } from "./types";
 
-type DataItem = {
-  key: number;
-  name: string;
-  age: number;
-  address: string;
+const getRandomuserParams = (params: Partial<Params>) => ({
+  results: params.pagination.pageSize,
+  page: params.pagination.current,
+  ...params,
+});
+
+type State = {
+  data: Data[];
+  pagination: TablePaginationConfig;
+  loading: boolean;
+  filteredInfo: Record<string, string[]>;
+  sortedInfo: Record<string, any>;
 };
 
-const Table = (): JSX.Element => {
-  const [data, setData] = useState<DataItem[]>([]);
+type Params = {
+  pagination: TablePaginationConfig;
+  sortField: "gender" | "name";
+  sortOrder: "ascend" | "descend";
+  gender: string[];
+};
+
+const initState = {
+  data: [],
+  pagination: {
+    current: 1,
+    pageSize: 10,
+  },
+  loading: false,
+  filteredInfo: {},
+  sortedInfo: {},
+};
+
+const MyTable = () => {
+  const [state, setState] = useState<Partial<State>>(initState);
+
+  const getList = (params: Partial<Params> = {}) => {
+    console.log("params", params);
+    setState((prevState) => ({ ...prevState, loading: true }));
+    fetch(
+      `https://randomuser.me/api?${qs.stringify(getRandomuserParams(params))}`
+    )
+      .then((res) => res.json())
+      .then((data) => {
+        setState((prevState) => ({
+          ...prevState,
+          loading: false,
+          data: data.results,
+          pagination: {
+            ...params.pagination,
+            total: 200,
+          },
+        }));
+      });
+  };
 
   useEffect(() => {
-    setTimeout(() => {
-      for (let i = 0; i < 100; i++) {
-        setData((prevData) => {
-          return [
-            ...prevData,
-            {
-              key: i,
-              name: `Edrward ${i}`,
-              age: 32,
-              address: `London Park no. ${i}`,
-            },
-          ];
-        });
-      }
-    }, 3000);
-  }, []);
+    getList({
+      sortField: state.sortedInfo.field,
+      sortOrder: state.sortedInfo.order,
+      pagination: state.pagination,
+      ...state.filteredInfo,
+    });
+  }, [
+    state.pagination.pageSize,
+    state.pagination.current,
+    state.sortedInfo.field,
+    state.sortedInfo.order,
+    state.filteredInfo.gender,
+  ]);
 
-  const columns: ColumnsType<DataItem> = [
+  const handleTableChange = (
+    pagination: TablePaginationConfig,
+    filters: Record<string, string[]>,
+    sorter: Record<string, any>
+  ) => {
+    console.log("handleTableChange filters", filters);
+    console.log("handleTableChange sorter", sorter);
+    console.log("handleTableChange pagination", pagination);
+    setState((prevState) => ({
+      ...prevState,
+      filteredInfo: filters,
+      sortedInfo: sorter,
+      pagination,
+    }));
+  };
+
+  const resetFilters = () => {
+    setState(initState);
+  };
+
+  const columns = [
     {
-      title: "Full Name",
-      width: 100,
+      title: "Name",
       dataIndex: "name",
       key: "name",
-      fixed: "left",
+      sorter: true,
+      sortOrder:
+        state.sortedInfo?.columnKey === "name" && state.sortedInfo.order,
+      render: (name: Record<string, string>) => `${name.first} ${name.last}`,
+      width: "20%",
     },
     {
-      title: "Age",
-      width: 100,
-      dataIndex: "age",
-      key: "age",
-      fixed: "left",
+      title: "Gender",
+      dataIndex: "gender",
+      key: "gender",
+      filters: [
+        { text: "Male", value: "male" },
+        { text: "Female", value: "female" },
+      ],
+      width: "20%",
+      sorter: true,
+      sortOrder:
+        state.sortedInfo?.columnKey === "gender" && state.sortedInfo.order,
+      filteredValue: state.filteredInfo?.gender || null,
     },
     {
-      title: "Column 1",
-      dataIndex: "address",
-      key: "1",
-      width: 150,
-    },
-    {
-      title: "Column 2",
-      dataIndex: "address",
-      key: "2",
-      width: 150,
-    },
-    {
-      title: "Column 3",
-      dataIndex: "address",
-      key: "3",
-      width: 150,
-    },
-    {
-      title: "Column 4",
-      dataIndex: "address",
-      key: "4",
-      width: 150,
-    },
-    {
-      title: "Column 5",
-      dataIndex: "address",
-      key: "5",
-      width: 150,
-    },
-    {
-      title: "Column 6",
-      dataIndex: "address",
-      key: "6",
-      width: 150,
-    },
-    {
-      title: "Column 7",
-      dataIndex: "address",
-      key: "7",
-      width: 150,
-    },
-    { title: "Column 8", dataIndex: "address", key: "8" },
-    {
-      title: "Action",
-      key: "operation",
-      fixed: "right",
-      width: 100,
-      render: (_, record) => {
-        function confirm() {
-          Modal.confirm({
-            width: 320,
-            title: "Delete this user from this project?",
-            cancelText: "Cancel",
-            closable: true,
-            maskClosable: true,
-            async onOk() {
-              const deleteUser = async () => {
-                return new Promise((resolve) => {
-                  setTimeout(() => {
-                    resolve(
-                      setData((prevData) =>
-                        prevData.filter((item) => item.key !== record.key)
-                      )
-                    );
-                  }, 2000);
-                });
-              };
-              await deleteUser();
-            },
-          });
-        }
-        return (
-          <Button danger onClick={confirm}>
-            Delete
-          </Button>
-        );
-      },
+      title: "Email",
+      dataIndex: "email",
     },
   ];
-
-  const [fixedTop, setFixedTop] = useState<boolean>(false);
-
-  if (data.length < 1) {
-    return <Spin className="!block !mx-auto" size="large" />;
-  }
-
   return (
-    <AntTable
-      columns={columns}
-      dataSource={data}
-      scroll={{ x: 1500 }}
-      summary={(pageData) => (
-        <AntTable.Summary fixed={fixedTop ? "top" : "bottom"}>
-          <AntTable.Summary.Row>
-            <AntTable.Summary.Cell index={0} colSpan={2}>
-              <Switch
-                checkedChildren="Fixed Top"
-                unCheckedChildren="Fixed Top"
-                checked={fixedTop}
-                onChange={() => {
-                  setFixedTop(!fixedTop);
-                }}
-              />
-            </AntTable.Summary.Cell>
-            <AntTable.Summary.Cell index={2} colSpan={8}>
-              Scroll Context
-            </AntTable.Summary.Cell>
-            <AntTable.Summary.Cell index={10}>Fix Right</AntTable.Summary.Cell>
-          </AntTable.Summary.Row>
-        </AntTable.Summary>
-      )}
-      sticky
-    />
+    <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Button onClick={resetFilters}>Reset filters</Button>
+      <Table
+        columns={columns}
+        rowKey={(record) => {
+          return record.login.uuid;
+        }}
+        dataSource={state.data}
+        pagination={state.pagination}
+        loading={state.loading}
+        onChange={handleTableChange}
+      />
+    </Space>
   );
 };
 
-export { Table };
+export { MyTable };
