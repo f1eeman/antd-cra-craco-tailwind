@@ -1,12 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Table as AntTable,
-  Switch,
-  Popconfirm,
-  Button,
-  Spin,
-  Modal,
-} from "antd";
+import { Table as AntTable, Switch, Button, Spin, Modal } from "antd";
 import { ColumnsType } from "antd/lib/table";
 
 type DataItem = {
@@ -18,7 +11,6 @@ type DataItem = {
 
 const Table = (): JSX.Element => {
   const [data, setData] = useState<DataItem[]>([]);
-  const [confirmLoading, setConfirmLoading] = useState<boolean>(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -109,10 +101,19 @@ const Table = (): JSX.Element => {
             cancelText: "Cancel",
             closable: true,
             maskClosable: true,
-            onOk: () => {
-              setData((prevData) =>
-                prevData.filter((item) => item.key !== record.key)
-              );
+            async onOk() {
+              const deleteUser = async () => {
+                return new Promise((resolve) => {
+                  setTimeout(() => {
+                    resolve(
+                      setData((prevData) =>
+                        prevData.filter((item) => item.key !== record.key)
+                      )
+                    );
+                  }, 2000);
+                });
+              };
+              await deleteUser();
             },
           });
         }
