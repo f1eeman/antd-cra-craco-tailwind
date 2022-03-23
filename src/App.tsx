@@ -1,14 +1,12 @@
 import React, { useState } from "react";
-import { Tabs } from "antd";
-import { TabItem, TabList } from "./components";
 import { Button } from "antd";
-const { TabPane } = Tabs;
+import { Table } from "./components/Table";
 
 function App() {
   return (
     <>
-      <div className="tw-mx-auto tw-m-7 tw-w-80 tw-border-2 tw-border-blue-600 tw-p-8">
-        <TabList />
+      <div className="mx-auto m-7 w-4/5 border-2 border-blue-600 p-8">
+        <Table />
       </div>
     </>
   );
