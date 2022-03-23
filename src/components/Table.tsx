@@ -32,8 +32,6 @@ const initState = {
     pageSize: 10,
   },
   loading: false,
-  filteredInfo: {},
-  sortedInfo: {},
 };
 
 const MyTable = () => {
@@ -61,37 +59,27 @@ const MyTable = () => {
 
   useEffect(() => {
     getList({
-      sortField: state.sortedInfo.field,
-      sortOrder: state.sortedInfo.order,
       pagination: state.pagination,
-      ...state.filteredInfo,
     });
-  }, [
-    state.pagination.pageSize,
-    state.pagination.current,
-    state.sortedInfo.field,
-    state.sortedInfo.order,
-    state.filteredInfo.gender,
-  ]);
+  }, []);
 
   const handleTableChange = (
     pagination: TablePaginationConfig,
     filters: Record<string, string[]>,
     sorter: Record<string, any>
   ) => {
-    console.log("handleTableChange filters", filters);
-    console.log("handleTableChange sorter", sorter);
-    console.log("handleTableChange pagination", pagination);
-    setState((prevState) => ({
-      ...prevState,
-      filteredInfo: filters,
-      sortedInfo: sorter,
+    getList({
+      sortField: sorter.field,
+      sortOrder: sorter.order,
       pagination,
-    }));
+      ...filters,
+    });
   };
 
   const resetFilters = () => {
-    setState(initState);
+    getList({
+      pagination: initState.pagination,
+    });
   };
 
   const columns = [
@@ -100,8 +88,6 @@ const MyTable = () => {
       dataIndex: "name",
       key: "name",
       sorter: true,
-      sortOrder:
-        state.sortedInfo?.columnKey === "name" && state.sortedInfo.order,
       render: (name: Record<string, string>) => `${name.first} ${name.last}`,
       width: "20%",
     },
@@ -115,9 +101,6 @@ const MyTable = () => {
       ],
       width: "20%",
       sorter: true,
-      sortOrder:
-        state.sortedInfo?.columnKey === "gender" && state.sortedInfo.order,
-      filteredValue: state.filteredInfo?.gender || null,
     },
     {
       title: "Email",
